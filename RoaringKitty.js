@@ -11,7 +11,7 @@ const PUSHOVER_API_TOKEN = process.env.PUSHOVER_API_TOKEN;
 
 const socialMediaAccounts = [
   // { platform: 'Twitter', url: 'https://x.com/TheRoaringKitty' },
-  { platform: 'Twitter', url: 'https://x.com/elonmusk' },
+  // { platform: 'Twitter', url: 'https://x.com/elonmusk' },
   // { platform: 'YouTube', url: 'https://www.youtube.com/channel/UCBVriGGZnssyxL0a2ypTsNg' },
   { platform: 'YouTube', url: 'https://www.youtube.com/@espn/videos' },
   // { platform: 'Reddit', url: 'https://www.reddit.com/user/DeepFuckingValue/' },
@@ -33,7 +33,7 @@ module.exports = async function (context, myTimer) {
       if (account.platform === 'Twitter') {
         const tweets = $('div[data-testid="tweet"]');
         console.log(`Found ${tweets.length} tweets on ${account.platform}`);
-
+        console.log($.html());
         if (tweets.length > 0) {
           latestPost = tweets.first().text().trim();
           console.log(`Latest tweet content: "${latestPost}"`);
@@ -41,15 +41,14 @@ module.exports = async function (context, myTimer) {
           console.log(`No tweets found on ${account.platform}`);
         }
       } else if (account.platform === 'YouTube') {
-        const videos = $('a#video-title');
-        console.log(`Found ${videos.length} videos on ${account.platform}`);
-
-        if (videos.length > 0) {
-          latestPost = videos.first().text().trim();
+        const titleMatch = response.data.match(/"title":{"runs":\[{"text":"(.+?)"\}\]}/);
+        if (titleMatch && titleMatch[1]) {
+          latestPost = titleMatch[1];
           console.log(`Latest video title: "${latestPost}"`);
         } else {
-          console.log(`No videos found on ${account.platform}`);
+          console.log(`No video title found on ${account.platform}`);
         }
+      
       } else if (account.platform === 'Reddit') {
         const posts = $('h3._eYtD2XCVieq6emjKBH3m');
         console.log(`Found ${posts.length} posts on ${account.platform}`);
